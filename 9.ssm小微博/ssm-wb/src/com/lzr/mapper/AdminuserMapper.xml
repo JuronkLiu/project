@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzr.mapper.AdminuserMapper">
+
+	<!-- 用户注册 -->
+	<insert id="register" parameterType="Adminuser">
+		insert into adminuser(username,usersex,userpassword,usernichen,usercreatetime,state) 
+		values(#{username},#{usersex},#{userpassword},#{usernichen},#{usercreatetime},#{state})
+	</insert>
+
+	<!-- 用户登录 -->
+	<select id="login" resultType="Adminuser" parameterType="Adminuser">
+		select * from adminuser where usernichen = #{usernichen} and userpassword = #{userpassword}
+	</select>
+	
+	<!-- // 按照昵称查找用户
+	Integer findUser(String usernichen); -->
+	<select id="findUser" resultType="Integer" parameterType="String">
+		select * from adminuser where usernichen = #{v} 
+	</select>
+
+	<!-- 分页查找全部用户 
+	List<Adminuser> findAllUser(QueryVo vo);-->
+	<select id="findAllUser" resultType="Adminuser" parameterType="QueryVo">
+		select * from adminuser
+		<where>
+			<if test="name != null">
+				usernichen != #{name} 
+			</if>
+			<if test="find != null and find != ''">
+				and usernichen like "%"#{find}"%"
+			</if>
+		</where>
+		limit #{startRow},#{size}
+	</select>
+	
+	<!-- // 查找用户数量
+	List<Adminuser> countUser(String usernicheng); -->
+	<select id="countUser" resultType="Integer" parameterType="String">
+		select count(*) from adminuser where usernichen != #{v}
+	</select>
+
+</mapper>

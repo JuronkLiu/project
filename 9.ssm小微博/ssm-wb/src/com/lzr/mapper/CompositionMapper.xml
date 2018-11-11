@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzr.mapper.CompositionMapper">
+
+	<!-- // 添加我的心情 
+	Integer save(Composition composition); -->
+	<insert id="save" parameterType="Composition">
+		insert into composition(title,neirong,state,userid,username,createtime) 
+		values(#{title},#{neirong},#{state},#{userid},#{username},#{createtime})
+	</insert>
+
+	<!-- // 删除我的心情
+	Integer delete(Integer id); -->
+	<update id="delete" parameterType="Integer">
+		update composition set state = 4  where id = #{id}
+	</update>
+	
+	<!-- //将心情放在垃圾箱
+	Integer tobash(Integer id); -->
+	<update id="tobash" parameterType="Composition">
+		update composition set state = 2 where id = #{id}
+	</update>
+
+	<!-- //查看已经删除的心情
+	List<Composition> findDeleted(QueryVo vo); -->
+	<select id="findDeleted" resultType="Composition" parameterType="QueryVo">
+		select * from composition 
+		<where>
+			state = 2 
+			<if test="id != null">
+				and userid = #{id} 
+			</if>
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+		limit #{startRow},#{size}
+	</select>
+	
+	<!-- //获取已经删除的心情数量
+	Integer deleted(QueryVo vo); -->
+	<select id="deleted" resultType="Integer" parameterType="QueryVo">
+		select count(*) from composition 
+		<where>
+			state = 2
+			<if test="id != null">
+				and userid = #{id} 
+			</if>
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+	</select>
+
+	<!-- //将心情还原
+	Integer toupdatedelete(Composition composition); -->
+	<update id="toupdatedelete" parameterType="Composition">
+		update composition set state = 0 and createtime = #{createtime} where id = #{id}
+	</update>
+
+	<!-- // 修改我的心情
+	Integer update(Composition composition); -->
+	<update id="update" parameterType="Composition">
+		update composition set state = #{state}, title = #{title}, neirong = #{neirong},createtime = #{createtime} where id = #{id}
+	</update>
+
+
+	<!-- // 按userid查询
+	List<Composition> getById(Integer userid); -->
+	<select id="getUserById" parameterType="Integer" resultType="Composition">
+		select * from composition where userid = #{v} and state != 2
+	</select>
+	
+	<!-- //获取我的某个心情
+	Composition getById(Integer id); -->
+	<select id="getById" parameterType="Integer" resultType="Composition">
+		select * from composition where id = #{v}
+	</select>
+
+	<select id="getTotalCount" resultType="Integer">
+		select count(*) from composition
+	</select>
+
+	<!-- //  查询我的全部心情
+	List<Composition> getAll(QueryVo vo); -->
+	<select id="getAll" resultType="Composition" parameterType="QueryVo">
+		select * from composition
+		<where>
+			state != 2 and state != 4
+			<if test="id != null">
+				and userid = #{id} 
+			</if>
+			<if test="state !=10 ">
+				and state = #{state} 
+			</if>
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+		limit #{startRow},#{size}
+	</select>
+	
+	<!-- //查看我的心情数量
+	Integer countMyComposition(QueryVo vo); -->
+	<select id="countMyComposition" resultType="Integer" parameterType="QueryVo">
+		select count(*) from composition 
+		<where>
+			state != 2 and state != 4
+			<if test="id != null">
+				and userid = #{id} 
+			</if>
+			<if test="state != 10">
+				and state = #{state} 
+			</if>
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+	</select>
+	
+	<!-- // 查询公有的信息
+	List<Composition> getAllCommer(Integer userid); -->
+	<select id="getAllCommer" resultType="Composition" parameterType="QueryVo">
+		select * from composition 
+		<where>
+				state = 1
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+		limit #{startRow},#{size}
+	</select>
+
+	<!-- // 查询公有的信息数量
+	Integer countCommer(QueryVo vo); -->
+	<select id="countCommer" resultType="Integer" parameterType="QueryVo">
+		select count(*) from composition 
+		<where>
+				state = 1
+			<if test="find != null and find != ''">
+				and title like "%"#{find}"%"
+			</if>
+			<if test="find != null and find != ''">
+				or neirong like "%"#{find}"%"
+			</if>
+		</where>
+	</select>
+</mapper>

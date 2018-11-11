@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzr.mapper.FansMapper">
+
+	<insert id="save" parameterType="Fans">
+		insert into fans(fanuserid,fanusername,userid,createtime) values(#{fanuserid},#{fanusername},#{userid},#{createtime})
+	</insert>
+
+	<delete id="delete" parameterType="int">
+		delete from fans where fanuserid = #{v}
+	</delete>
+
+	<!-- // 根据用户昵称查询全部粉丝信息
+	List<Fans> getAll(QueryVo vo); -->
+	<select id="getAll" resultType="Fans" parameterType="QueryVo">
+		select * from fans
+		<where>
+			<if test="id != null">
+				userid = #{id} 
+			</if>
+			<if test="find != null and find != ''">
+				and fanusername like "%"#{find}"%"
+			</if>
+		</where>
+		limit #{startRow},#{size}
+	</select>
+	
+	<select id="findFans" resultType="Integer" parameterType="Fans">
+		select count(*) from fans where fanuserid = #{fanuserid} and userid = #{userid}
+	</select>
+
+	<!-- // 查询关注的数量
+	Integer countFans(Integer id); -->
+	<select id="countFans" resultType="Integer" parameterType="Integer">
+		select count(*) from fans where userid = #{v}
+	</select>
+</mapper>
